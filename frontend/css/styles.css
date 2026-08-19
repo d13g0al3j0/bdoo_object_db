@@ -1,0 +1,23 @@
+:root { color-scheme: light; font-family: Georgia, 'Times New Roman', serif; --ink: #17232d; --muted: #66737b; --paper: #f4f0e8; --accent: #d96b3b; --line: #d8d0c3; }
+* { box-sizing: border-box; }
+body { margin: 0; color: var(--ink); background: radial-gradient(circle at 80% 0%, #f8d8b8 0, transparent 35%), var(--paper); }
+header, main { max-width: 1120px; margin: auto; padding: 36px 24px; }
+header { min-height: 280px; display: flex; flex-direction: column; justify-content: end; }
+h1 { max-width: 700px; margin: 8px 0; font-size: clamp(3rem, 8vw, 6.5rem); line-height: .9; letter-spacing: 0; }
+header > p:not(.eyebrow) { max-width: 480px; color: var(--muted); font: 1rem/1.5 system-ui, sans-serif; }
+.eyebrow { margin: 0; color: var(--accent); text-transform: uppercase; letter-spacing: .12em; font: 700 .72rem/1 system-ui, sans-serif; }
+.metrics { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1px; border: 1px solid var(--line); background: var(--line); }
+.metrics article { padding: 24px; background: rgba(255,255,255,.55); display: grid; gap: 6px; }
+.metrics strong { font-size: 2rem; }
+.metrics span, table { font: .9rem system-ui, sans-serif; }
+.panel { margin-top: 52px; padding: 28px 0 60px; border-top: 3px solid var(--ink); }
+.panel-heading { display: flex; justify-content: space-between; align-items: end; gap: 16px; }
+h2 { margin: 8px 0 20px; font-size: 2rem; }
+button { border: 0; padding: 12px 18px; color: white; background: var(--ink); cursor: pointer; font: 700 .85rem system-ui, sans-serif; }
+button:hover { background: var(--accent); }
+#status { color: var(--muted); font: .9rem system-ui, sans-serif; }
+.table-wrap { overflow-x: auto; }
+table { width: 100%; border-collapse: collapse; text-align: left; }
+th, td { padding: 15px 10px; border-bottom: 1px solid var(--line); white-space: nowrap; }
+th { color: var(--muted); font-size: .72rem; text-transform: uppercase; letter-spacing: .08em; }
+@media (max-width: 680px) { header, main { padding: 26px 18px; } .metrics { grid-template-columns: repeat(2, 1fr); } .panel-heading { align-items: start; flex-direction: column; } }

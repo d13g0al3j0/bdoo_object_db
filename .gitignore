@@ -1,6 +1,7 @@
 target/
 .tools/
 *.odb
+data/universidad.odb
 .idea/
 .vscode/
 *.class

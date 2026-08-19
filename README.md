@@ -1,271 +1,165 @@
-# Laboratorio ObjectDB
+# Sistema Universitario Orientado a Objetos
 
-Proyecto educativo en Java que demuestra como convertir objetos normales en
-entidades persistentes usando Jakarta Persistence (JPA) y ObjectDB. El ejemplo
-representa una pequena empresa que tiene clientes, productos, pedidos y
-detalles de pedido.
+Laboratorio educativo de Bases de Datos Orientadas a Objetos con Java 17, JPA, ObjectDB, REST y una interfaz web. ObjectDB sigue siendo el motor de persistencia principal y almacena los objetos en `data/universidad.odb`.
 
-La aplicacion usa ObjectDB en modo embebido. No existe un servidor de base de
-datos separado: el almacenamiento se realiza en el archivo
-`data/empresa.odb`.
-# Laboratorio ObjectDB
+## Estado del proyecto
 
-Laboratorio práctico de Bases de Datos Orientadas a Objetos utilizando
-Java, ObjectDB, Maven y Docker.
+El proyecto se encuentra en una **fase funcional inicial**, con el modelo universitario, la persistencia ObjectDB, una transacción principal de inscripción, una API REST básica y un frontend demostrativo.
 
-## Requisitos
+### Fases realizadas
 
-- Git
-- Docker
-- Docker Compose
+- **Fase 1:** análisis del laboratorio anterior, sus archivos, dependencias, Docker y modelo `Cliente`/`Producto`/`Pedido`.
+- **Fase 2:** diseño del modelo universitario, herencia `Persona`, relaciones, composición, agregación y entidad intermedia `PlanMateria`.
+- **Fase 3:** actualización de Maven con Java 17, Jakarta Persistence, ObjectDB, Jersey, Grizzly, JSON-B, Jakarta Validation y JUnit 5.
+- **Fase 4:** creación de las entidades universitarias, enums, herencia `JOINED`, relaciones académicas, pagos, usuarios, roles y auditoría.
+- **Fase 5:** configuración programática de `universidadPU` y conexión con `objectdb:data/universidad.odb`.
+- **Fase 6:** repositorio genérico JPA y repositorios específicos para estudiantes, docentes, carreras, materias, paralelos, periodos, inscripciones, calificaciones, pagos y auditoría.
+- **Fase 7:** excepciones de negocio y capa de servicios inicial.
+- **Fase 8:** executor transaccional y `InscripcionService` con validación de estado, periodo, duplicados, cupos y prerrequisitos, además de `commit` y `rollback`.
+- **Fases 9 y 10:** API REST inicial, DTOs, respuestas JSON y endpoint transaccional de inscripción.
+- **Fases 12, 13 y 16:** frontend HTML/CSS/JavaScript, consumo mediante Fetch API y Docker con puerto `8080`, frontend integrado y volumen persistente.
 
-## Ejecutar
+### Funcionalidades comprobadas
 
-git clone https://github.com/d13g0al3j0/bdoo_object_db.git
+- `docker compose build` construye la imagen con Java 17.
+- Maven compila el proyecto dentro de Docker.
+- Las pruebas unitarias del modelo universitario pasan correctamente.
+- `GET /api/estudiantes` responde JSON.
+- La página `http://localhost:8080` responde HTML.
+- ObjectDB crea y conserva `data/universidad.odb`.
+- La aplicación utiliza configuración programática y no `persistence.xml`.
 
-cd bdoo_object_db
+### Fases pendientes
 
+- **Fase 11:** completar validación HTTP automática y manejo global uniforme para todos los recursos.
+- **Fase 14:** dashboard con estadísticas de estudiantes, docentes, carreras, materias, inscripciones, pagos, ingresos y promedio general.
+- **Fase 15:** ampliar las pruebas unitarias y crear pruebas de API para respuestas `400`, `404`, `409` y `500`.
+- **Fase 17:** crear un cargador completo de datos ficticios: facultades, carreras, materias, docentes, aulas, periodos, paralelos, inscripciones, calificaciones y pagos.
+- **Fase 18:** completar la documentación educativa y los ejercicios sobre JPQL, estados JPA, transacciones, concurrencia, API y frontend.
+- CRUD REST completo para estudiantes, docentes, carreras, materias, paralelos, periodos, inscripciones, calificaciones y pagos.
+- Endpoints especiales de historial, materias inscritas, carga docente, estudiantes de un paralelo y estadísticas de periodo.
+- Interfaces frontend separadas para estudiantes, inscripciones, calificaciones y pagos.
+- Consulta avanzada JPQL con `JOIN FETCH`, `LEFT JOIN`, `GROUP BY`, `COUNT`, `AVG` y `SUM`.
+- Control de conflictos de horarios y estrategia documentada para concurrencia.
+- OpenAPI/Swagger y configuración CORS explícita para despliegues separados.
+
+El trabajo pendiente es incremental: la base arquitectónica ya está separada en entidades, DTOs, repositorios, servicios, recursos, excepciones y configuración.
+
+## Arquitectura
+
+```text
+Navegador -> HTML/CSS/JavaScript -> Jersey REST -> Service -> Repository/JPA -> ObjectDB
+```
+
+El código se organiza en `entity`, `dto`, `repository`, `service`, `resource`, `exception` y `config`. Los recursos REST no contienen reglas de negocio; la inscripción transaccional vive en `InscripcionService`.
+
+## Modelo
+
+```text
+Persona
+├── Estudiante
+├── Docente
+└── Administrador
+
+Universidad -> Facultad -> Carrera -> PlanEstudios -> PlanMateria -> Materia
+Materia -> prerrequisitos
+Materia + Docente + PeriodoAcademico + Aula -> Paralelo -> Horario
+Estudiante -> Inscripcion -> DetalleInscripcion -> Paralelo
+Estudiante -> Calificacion, Asistencia, Pago
+Usuario <-> Rol; Auditoria -> Usuario
+```
+
+La herencia usa `@Inheritance(strategy = JOINED)`: los atributos comunes permanecen en `Persona` y cada subtipo conserva sus atributos específicos. `PlanMateria` es una entidad intermedia porque almacena semestre, créditos y si la materia es obligatoria o electiva. `DetalleInscripcion` usa composición con `cascade = ALL` y `orphanRemoval = true`.
+
+## ObjectDB y JPA
+
+- Una entidad es un objeto Java administrado por JPA y marcado con `@Entity`.
+- La identidad se define mediante `@Id` y `@GeneratedValue`.
+- Las asociaciones usan `@OneToMany`, `@ManyToOne`, `@ManyToMany` y `@OneToOne`.
+- JPQL consulta entidades y propiedades, no tablas SQL.
+- `PersistenceConfig` crea `universidadPU` programáticamente y usa `objectdb:data/universidad.odb`; no se utiliza `persistence.xml`.
+- Una transacción comienza con `begin()`, confirma con `commit()` y revierte con `rollback()`.
+- Los estados JPA a estudiar son `NEW`, `MANAGED`, `DETACHED` y `REMOVED`, mediante `persist`, `find`, `merge`, `remove`, `detach` y `clear`.
+
+## API disponible
+
+```text
+GET  /api/estudiantes
+GET  /api/estudiantes/{id}
+POST /api/inscripciones/transaccion
+```
+
+La inscripción recibe:
+
+```json
+{
+  "estudianteId": 1,
+  "periodoId": 1,
+  "paralelos": [100, 101],
+  "usuarioId": 1
+}
+```
+
+El servicio valida estudiante activo, periodo activo, duplicados, cupos y prerrequisitos. Cualquier error ejecuta `rollback()`; una operación correcta crea la inscripción, sus detalles, descuenta cupos y registra auditoría antes del `commit()`.
+
+Los DTOs evitan exponer directamente el grafo JPA y permiten contratos JSON estables. Las excepciones de negocio se convierten en respuestas JSON con estado HTTP y `transaction: ROLLED_BACK`.
+
+## Ejecución con Docker
+
+```bash
+docker compose build
+docker compose up
 docker compose up --build
-
-## Detener
-
+docker compose up -d
+docker compose logs -f
 docker compose down
+docker compose run --rm universidad-lab mvn test
+```
 
-## Tecnologias
-
-- Java 17 como version objetivo del proyecto.
-- Maven para compilar, resolver dependencias y ejecutar la aplicacion.
-- Jakarta Persistence 3.2, la API estandar de persistencia.
-- ObjectDB 2.9.5, implementacion de JPA y base de datos orientada a objetos.
-- JUnit 5.11 para las pruebas unitarias.
-- Docker Compose para ejecutar todo sin instalar Maven localmente.
-
-## Estructura del proyecto
+Abrir:
 
 ```text
-.
-|-- Dockerfile                 Imagen de ejecucion
-|-- docker-compose.yml         Servicio y volumen de datos
-|-- pom.xml                    Dependencias y configuracion Maven
-|-- data/                      Archivo de base de datos ObjectDB
-|-- ejercicios/                Explicacion de los ejercicios
-|-- src/main/java/...          Codigo de la aplicacion y entidades
-`-- src/test/java/...          Pruebas unitarias
+http://localhost:8080
+http://localhost:8080/api/estudiantes
 ```
 
-## Como ejecutar
-
-### Opcion recomendada: Docker
-
-Desde la raiz del proyecto:
-
-```bash
-docker compose up --build
-```
-
-Este comando construye la imagen, compila el proyecto y ejecuta
-`com.laboratorio.objectdb.App`. Para detener el servicio:
-
-```bash
-docker compose down
-```
-
-El archivo `docker-compose.yml` monta la carpeta local `./data` en
-`/app/data`. Por eso el archivo ObjectDB permanece en el equipo aunque el
-contenedor se elimine.
-
-Para ejecutar la aplicacion una sola vez y eliminar el contenedor al terminar:
-
-```bash
-docker compose run --build --rm objectdb-lab
-```
-
-### Ejecutar las pruebas en Docker
-
-```bash
-docker compose run --build --rm objectdb-lab mvn test
-```
-
-### Ejecutar con Maven local
-
-Si Java 17 y Maven estan instalados en el equipo:
-
-```bash
-mvn clean compile
-mvn exec:java
-mvn test
-```
-
-## Flujo completo de `App`
-
-La clase `App` realiza estas operaciones en orden:
-
-1. Muestra el titulo del laboratorio en la consola.
-2. Crea una `PersistenceConfiguration` llamada `empresaPU`.
-3. Configura la URL `objectdb:data/empresa.odb`.
-4. Registra `Cliente`, `Producto`, `Pedido` y `DetallePedido` como clases
-	administradas por JPA.
-5. Crea un `EntityManagerFactory`, que representa la conexion y configuracion
-	de la unidad de persistencia.
-6. Crea un `EntityManager`, que permite buscar, guardar y consultar entidades.
-7. Busca por identificador los objetos de demostracion:
-	- Cliente `id = 1`.
-	- Producto `id = 10`.
-	- Pedido `id = 100`.
-	- Detalle `id = 1000`.
-8. Crea unicamente los objetos que no existan. Los datos creados son:
-	- Cliente: Juan Perez, `juan@gmail.com`.
-	- Producto: Teclado mecanico, precio `89.99`.
-	- Pedido: `100`, asociado al cliente.
-	- Detalle: cantidad `2`, precio unitario `89.99`, asociado al producto.
-9. Si falta algun objeto, inicia una transaccion con `begin()`, usa `persist()`
-	para guardar cada entidad faltante y confirma con `commit()`.
-10. Si todos los objetos ya existen, informa que los datos de demostracion ya
-	 estan almacenados y no los inserta de nuevo.
-11. Busca y muestra todos los productos ordenados por nombre.
-12. Busca y muestra todos los pedidos ordenados por identificador. Tambien
-	 carga el cliente de cada pedido y recorre sus detalles.
-13. Si ocurre una excepcion, hace `rollback()` cuando hay una transaccion activa
-	 y muestra el error.
-14. En todos los casos cierra el `EntityManager` y el
-	 `EntityManagerFactory` en el bloque `finally`.
-
-La configuracion se realiza directamente desde Java mediante
-`PersistenceConfiguration`; por eso este proyecto no necesita un archivo
-`persistence.xml`.
-
-## Modelo de entidades
-
-### `Cliente`
-
-La clase representa a un cliente y tiene:
-
-- `id`: identificador primario marcado con `@Id`.
-- `nombre`: nombre completo.
-- `correo`: correo electronico.
-
-Tiene un constructor vacio para JPA, un constructor con datos, getters y un
-`toString()` para mostrar el objeto.
-
-### `Producto`
-
-La clase representa un producto y tiene:
-
-- `id`: identificador primario.
-- `nombre`: nombre del producto.
-- `descripcion`: detalle descriptivo.
-- `precio`: valor monetario representado con `BigDecimal`.
-
-Ademas de getters, tiene setters para modificar nombre, descripcion y precio.
-
-### `Pedido`
-
-La clase representa una compra y tiene:
-
-- `id`: identificador del pedido.
-- `cliente`: cliente que realizo el pedido.
-- `detalles`: lista de productos incluidos en el pedido.
-
-La anotacion `@ManyToOne` en `cliente` significa que varios pedidos pueden
-pertenecer al mismo cliente. La anotacion `@OneToMany(mappedBy = "pedido")` en
-`detalles` significa que un pedido puede tener muchos detalles y que el campo
-`pedido` de `DetallePedido` controla esa relacion.
-
-### `DetallePedido`
-
-La clase representa una linea de un pedido y tiene:
-
-- `id`: identificador del detalle.
-- `pedido`: pedido al que pertenece.
-- `producto`: producto incluido.
-- `cantidad`: numero de unidades.
-- `precioUnitario`: precio del producto en esa linea.
-
-Sus campos `pedido` y `producto` usan `@ManyToOne`, porque muchos detalles
-pueden referirse al mismo pedido o al mismo producto.
-
-## Como se mantiene la relacion del pedido
-
-El metodo `Pedido.addDetalle(detalle)` hace dos cosas:
-
-```java
-detalles.add(detalle);
-detalle.setPedido(this);
-```
-
-La primera linea agrega el detalle a la coleccion del pedido. La segunda asigna
-el pedido dentro del detalle. Asi ambos lados de la relacion quedan
-sincronizados en memoria antes de guardar los objetos.
-
-## Consultas JPQL
-
-La aplicacion ejecuta esta consulta para recuperar productos:
-
-```java
-SELECT p FROM Producto p ORDER BY p.nombre
-```
-
-No consulta una tabla directamente: consulta la entidad `Producto` y devuelve
-objetos `Producto` ordenados por su nombre.
-
-Para los pedidos ejecuta:
-
-```java
-SELECT p FROM Pedido p JOIN FETCH p.cliente ORDER BY p.id
-```
-
-`JOIN FETCH p.cliente` solicita que el cliente relacionado se cargue junto con
-cada pedido. Despues, el programa recorre `pedido.getDetalles()` y muestra el
-producto, la cantidad y el precio unitario de cada detalle.
-
-## Transacciones y manejo de errores
-
-Las operaciones `persist()` se ejecutan dentro de una transaccion. `commit()`
-confirma los cambios en `empresa.odb`. Si algo falla antes del commit,
-`rollback()` cancela la transaccion activa para evitar guardar cambios
-incompletos.
-
-El `finally` cierra los recursos aunque la operacion termine con error. Esto
-evita dejar abierta la base de datos o recursos de JPA.
-
-## Resultado esperado
-
-En la primera ejecucion debe aparecer una salida similar a:
-
-```text
-Datos de demostracion almacenados.
-Cliente encontrado: Cliente{id=1, nombre='Juan Perez', correo='juan@gmail.com'}
-Productos: [Producto{...}]
-Pedido consultado: Pedido{... detalles=1}
-  Detalle: DetallePedido{... cantidad=2, precioUnitario=89.99}
-```
-
-En ejecuciones posteriores debe aparecer:
-
-```text
-Los datos de demostracion ya existen.
-```
-
-Esto demuestra que los objetos fueron persistidos y luego recuperados desde
-ObjectDB, no creados nuevamente en cada ejecucion.
-
-## Ejercicios documentados
-
-- [01 Objetos](ejercicios/01-objetos.md): clases, constructores y entidades.
-- [02 Persistencia](ejercicios/02-persistencia.md): transacciones y ObjectDB.
-- [03 Consultas](ejercicios/03-consultas.md): consultas JPQL.
-- [04 Relaciones](ejercicios/04-relaciones.md): `ManyToOne` y `OneToMany`.
-- [05 Evaluacion](ejercicios/05-evaluacion.md): criterios de comprobacion.
-
-## Reiniciar la base de datos
-
-Para comenzar de nuevo, detiene los contenedores y elimina el archivo local:
+La carpeta local `./data` se monta como `/app/data`, por lo que `universidad.odb` sobrevive a la eliminación del contenedor. Para reiniciar la base:
 
 ```bash
 docker compose down
-rm -f data/empresa.odb
+rm -f data/universidad.odb
 docker compose up --build
 ```
 
-Al eliminar el archivo se pierden los datos persistidos y la siguiente
-ejecucion vuelve a crear los datos de demostracion.
+## Pruebas
+
+Las pruebas unitarias cubren herencia y relaciones del modelo. La validación ejecutable recomendada es:
+
+```bash
+docker compose run --rm universidad-lab mvn test
+```
+
+## Concurrencia
+
+ObjectDB embebido no debe tratarse como un sistema con bloqueo pesimista universal. La operación de inscripción agrupa validaciones y actualización de cupos en una transacción, pero una demostración de dos escritores concurrentes debe documentar el riesgo de `lost update` y validar el comportamiento con pruebas de integración. Una evolución posible es serializar el caso de negocio o usar una estrategia optimista compatible con la versión de ObjectDB.
+
+La versión de evaluación de ObjectDB 2.9.5 limita el almacenamiento a diez tipos persistibles. Como las relaciones JPA hacen que ObjectDB descubra tipos relacionados transitivamente, el inicializador ejecutable carga actualmente solo dos estudiantes demo para garantizar el arranque sin licencia adicional. El modelo completo permanece registrado y puede utilizarse con una licencia de ObjectDB que elimine esa restricción.
+
+## Ejercicios
+
+Los ejercicios existentes se conservarán como material histórico y se ampliarán con:
+
+1. Modelo, identidad y herencia.
+2. Relaciones y composición.
+3. ObjectDB y estados JPA.
+4. Consultas JPQL con `JOIN`, `JOIN FETCH`, `GROUP BY` y agregados.
+5. Servicios y repositorios.
+6. Transacciones, commit y rollback.
+7. API REST, JSON y DTO.
+8. Frontend con Fetch API.
+9. Concurrencia y auditoría.
+10. Evaluación final.
+
+## Antes y después
+
+El laboratorio anterior modelaba `Cliente`, `Producto`, `Pedido` y `DetallePedido`. El nuevo dominio agrega herencia, planes de estudio, prerrequisitos, periodos, paralelos, inscripción atómica, calificaciones, asistencia, pagos y auditoría: un grafo de objetos mucho más útil para demostrar persistencia orientada a objetos.

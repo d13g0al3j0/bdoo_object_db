@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Sistema Universitario</title>
+    <link rel="stylesheet" href="/css/styles.css">
+</head>
+<body>
+<header>
+    <p class="eyebrow">ObjectDB · laboratorio académico</p>
+    <h1>Sistema Universitario</h1>
+    <p>Persistencia orientada a objetos para la gestión académica.</p>
+</header>
+<main>
+    <section class="metrics" aria-label="Módulos">
+        <article><strong id="total-estudiantes">-</strong><span>Estudiantes</span></article>
+        <article><strong>REST</strong><span>API activa</span></article>
+        <article><strong>JPA</strong><span>Persistencia</span></article>
+        <article><strong>ODB</strong><span>ObjectDB</span></article>
+    </section>
+    <section class="panel">
+        <div class="panel-heading">
+            <div><p class="eyebrow">Consulta JPQL</p><h2>Estudiantes registrados</h2></div>
+            <button id="reload" type="button">Actualizar</button>
+        </div>
+        <p id="status" role="status">Consultando la API...</p>
+        <div class="table-wrap">
+            <table>
+                <thead><tr><th>Código</th><th>Nombre</th><th>Correo</th><th>Carrera</th><th>Estado</th></tr></thead>
+                <tbody id="students"></tbody>
+            </table>
+        </div>
+    </section>
+</main>
+<script src="/js/app.js"></script>
+</body>
+</html>

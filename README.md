@@ -8,6 +8,28 @@ detalles de pedido.
 La aplicacion usa ObjectDB en modo embebido. No existe un servidor de base de
 datos separado: el almacenamiento se realiza en el archivo
 `data/empresa.odb`.
+# Laboratorio ObjectDB
+
+Laboratorio práctico de Bases de Datos Orientadas a Objetos utilizando
+Java, ObjectDB, Maven y Docker.
+
+## Requisitos
+
+- Git
+- Docker
+- Docker Compose
+
+## Ejecutar
+
+git clone https://github.com/d13g0al3j0/bdoo_object_db.git
+
+cd bdoo_object_db
+
+docker compose up --build
+
+## Detener
+
+docker compose down
 
 ## Tecnologias
 

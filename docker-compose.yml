@@ -1,0 +1,12 @@
+services:
+
+  objectdb-lab:
+
+    build: .
+
+    container_name: laboratorio-objectdb
+
+    volumes:
+      - ./data:/app/data
+
+    working_dir: /app

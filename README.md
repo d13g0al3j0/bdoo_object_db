@@ -4,7 +4,7 @@ Laboratorio educativo de Bases de Datos Orientadas a Objetos con Java 17, JPA, O
 
 ## Estado del proyecto
 
-El proyecto se encuentra en una **fase funcional inicial**, con el modelo universitario, la persistencia ObjectDB, una transacción principal de inscripción, una API REST básica y un frontend demostrativo.
+El proyecto se encuentra en una **fase funcional inicial avanzada**, aproximadamente en las fases 14 y 16. Ya existe integración entre modelo JPA, ObjectDB, servicios, API REST, frontend y Docker.
 
 ### Fases realizadas
 
@@ -17,7 +17,7 @@ El proyecto se encuentra en una **fase funcional inicial**, con el modelo univer
 - **Fase 7:** excepciones de negocio y capa de servicios inicial.
 - **Fase 8:** executor transaccional y `InscripcionService` con validación de estado, periodo, duplicados, cupos y prerrequisitos, además de `commit` y `rollback`.
 - **Fases 9 y 10:** API REST inicial, DTOs, respuestas JSON y endpoint transaccional de inscripción.
-- **Fases 12, 13 y 16:** frontend HTML/CSS/JavaScript, consumo mediante Fetch API y Docker con puerto `8080`, frontend integrado y volumen persistente.
+- **Fases 12, 13 y 16:** frontend HTML/CSS/JavaScript, menú hamburguesa, CRUD web de estudiantes, dashboard visual, Fetch API y Docker con puerto `8080` y volumen persistente.
 
 ### Funcionalidades comprobadas
 
@@ -25,23 +25,106 @@ El proyecto se encuentra en una **fase funcional inicial**, con el modelo univer
 - Maven compila el proyecto dentro de Docker.
 - Las pruebas unitarias del modelo universitario pasan correctamente.
 - `GET /api/estudiantes` responde JSON.
+- El CRUD de estudiantes funciona con `POST`, `PUT` y `DELETE`.
+- Los CRUD iniciales de docentes, carreras y materias funcionan mediante REST.
+- Los catálogos de planes, periodos, aulas, paralelos y horarios tienen endpoints iniciales.
+- `GET /api/dashboard` responde con métricas JSON.
 - La página `http://localhost:8080` responde HTML.
+- El menú hamburguesa muestra los módulos existentes.
 - ObjectDB crea y conserva `data/universidad.odb`.
 - La aplicación utiliza configuración programática y no `persistence.xml`.
 
-### Fases pendientes
+## Trabajo pendiente
 
-- **Fase 11:** completar validación HTTP automática y manejo global uniforme para todos los recursos.
-- **Fase 14:** dashboard con estadísticas de estudiantes, docentes, carreras, materias, inscripciones, pagos, ingresos y promedio general.
-- **Fase 15:** ampliar las pruebas unitarias y crear pruebas de API para respuestas `400`, `404`, `409` y `500`.
-- **Fase 17:** crear un cargador completo de datos ficticios: facultades, carreras, materias, docentes, aulas, periodos, paralelos, inscripciones, calificaciones y pagos.
-- **Fase 18:** completar la documentación educativa y los ejercicios sobre JPQL, estados JPA, transacciones, concurrencia, API y frontend.
-- CRUD REST completo para estudiantes, docentes, carreras, materias, paralelos, periodos, inscripciones, calificaciones y pagos.
-- Endpoints especiales de historial, materias inscritas, carga docente, estudiantes de un paralelo y estadísticas de periodo.
-- Interfaces frontend separadas para estudiantes, inscripciones, calificaciones y pagos.
-- Consulta avanzada JPQL con `JOIN FETCH`, `LEFT JOIN`, `GROUP BY`, `COUNT`, `AVG` y `SUM`.
-- Control de conflictos de horarios y estrategia documentada para concurrencia.
-- OpenAPI/Swagger y configuración CORS explícita para despliegues separados.
+### Prioridad 1: inscripciones completas
+
+- Crear `GET /api/inscripciones`.
+- Crear `GET /api/inscripciones/{id}`.
+- Añadir `POST /api/inscripciones` como contrato general.
+- Añadir anulación de inscripciones.
+- Exponer materias inscritas por estudiante.
+- Exponer estudiantes por paralelo.
+- Crear historial académico completo.
+- Integrar la inscripción transaccional en una pantalla web.
+- Mostrar visualmente los casos de `COMMIT` y `ROLLBACK`.
+
+### Prioridad 2: calificaciones y pagos
+
+- CRUD de evaluaciones.
+- Registro y actualización de calificaciones.
+- Validación de notas entre `0` y `100`.
+- Cálculo de promedio y estado aprobado/reprobado.
+- Interfaz web para docentes.
+- CRUD de pagos y conceptos de pago.
+- Anulación de pagos.
+- Validación de montos.
+- Auditoría de pagos y anulaciones.
+- Pantalla web de pagos.
+
+### Prioridad 3: frontend académico
+
+- Formularios para paralelos y horarios.
+- Formularios para docentes, carreras y materias.
+- Vistas de planes, periodos y aulas.
+- Dashboard con gráficos y filtros.
+- Estadísticas por periodo, carrera y materia.
+- Mensajes visuales uniformes para errores `400`, `404`, `409` y `500`.
+
+### Prioridad 4: API y reglas de negocio
+
+- Crear un `ExceptionMapper` global para respuestas JSON uniformes.
+- Completar actualización y eliminación de planes, periodos, aulas, paralelos y horarios.
+- Validar duplicados por CI, código y correo.
+- Validar capacidad de aula contra cupos del paralelo.
+- Completar conflictos de docente y aula.
+- Añadir CORS explícito.
+- Añadir OpenAPI/Swagger.
+
+### Prioridad 5: consultas JPQL educativas
+
+Implementar y documentar consultas con:
+
+- `JOIN` y `JOIN FETCH`.
+- `LEFT JOIN`.
+- `DISTINCT` y `ORDER BY`.
+- `GROUP BY`.
+- `COUNT`, `AVG` y `SUM`.
+- Materias sin estudiantes.
+- Paralelos sin cupos.
+- Pagos pendientes.
+- Estudiantes por carrera.
+- Historial académico.
+- Carga académica de docentes.
+
+### Prioridad 6: pruebas
+
+- Pruebas de persistencia real con ObjectDB.
+- Inscripción válida.
+- Inscripción duplicada.
+- Inscripción sin cupo.
+- Periodo cerrado.
+- Prerrequisito no cumplido.
+- Rollback de inscripción.
+- Calificación y pago inválidos.
+- Pruebas REST para `GET`, `POST`, `PUT` y `DELETE`.
+- Pruebas de respuestas `400`, `404`, `409` y `500`.
+- Pruebas de formularios frontend.
+
+### Prioridad 7: concurrencia y datos demo
+
+- Demostrar dos estudiantes intentando tomar el último cupo.
+- Documentar `race condition` y `lost update`.
+- Definir una estrategia compatible con ObjectDB para serialización o bloqueo.
+- Crear el cargador completo de datos ficticios solicitado.
+- Ejecutar la carga completa con una licencia de ObjectDB sin el límite de evaluación.
+
+### Prioridad 8: documentación educativa
+
+- Explicar estados JPA: `NEW`, `MANAGED`, `DETACHED` y `REMOVED`.
+- Completar ejercicios sobre modelo, herencia, relaciones y persistencia.
+- Documentar JPQL, transacciones, REST, JSON y DTOs.
+- Documentar Docker, volumen y conservación de `universidad.odb`.
+- Completar ejercicios de concurrencia, API, frontend y evaluación final.
 
 El trabajo pendiente es incremental: la base arquitectónica ya está separada en entidades, DTOs, repositorios, servicios, recursos, excepciones y configuración.
 

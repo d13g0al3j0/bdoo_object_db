@@ -1,8 +1,14 @@
 package com.laboratorio.universidad.resource;
 
 import com.laboratorio.universidad.dto.EstudianteDTO;
+import com.laboratorio.universidad.dto.EstudianteRequest;
 import com.laboratorio.universidad.entity.Estudiante;
+import com.laboratorio.universidad.service.EstudianteService;
+import jakarta.validation.Valid;
+import jakarta.ws.rs.DELETE;
 import jakarta.ws.rs.GET;
+import jakarta.ws.rs.POST;
+import jakarta.ws.rs.PUT;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
@@ -16,9 +22,11 @@ import java.util.List;
 @Produces(MediaType.APPLICATION_JSON)
 public class EstudianteResource {
     private final EntityManager entityManager;
+    private final EstudianteService service;
 
     public EstudianteResource(EntityManager entityManager) {
         this.entityManager = entityManager;
+        this.service = new EstudianteService(entityManager);
     }
 
     @GET
@@ -34,5 +42,24 @@ public class EstudianteResource {
         return estudiante == null
                 ? Response.status(Response.Status.NOT_FOUND).build()
                 : Response.ok(new EstudianteDTO(estudiante)).build();
+    }
+
+    @POST
+    public Response crear(@Valid EstudianteRequest request) {
+        return Response.status(Response.Status.CREATED)
+                .entity(new EstudianteDTO(service.crear(request))).build();
+    }
+
+    @PUT
+    @Path("/{id}")
+    public Response actualizar(@PathParam("id") Long id, @Valid EstudianteRequest request) {
+        return Response.ok(new EstudianteDTO(service.actualizar(id, request))).build();
+    }
+
+    @DELETE
+    @Path("/{id}")
+    public Response eliminar(@PathParam("id") Long id) {
+        service.eliminar(id);
+        return Response.noContent().build();
     }
 }

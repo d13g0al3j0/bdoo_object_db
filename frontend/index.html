@@ -7,6 +7,26 @@
     <link rel="stylesheet" href="/css/styles.css">
 </head>
 <body>
+<nav class="site-nav" aria-label="Navegación principal">
+    <a class="brand" href="/">SISTEMA UNIVERSITARIO</a>
+    <button id="menu-toggle" class="menu-toggle" type="button" aria-expanded="false" aria-controls="main-menu" aria-label="Abrir menú">
+        <span></span><span></span><span></span>
+    </button>
+    <div id="main-menu" class="main-menu">
+        <a class="active" href="/">Dashboard</a>
+        <a href="#estudiantes">Estudiantes</a>
+        <a href="/api/docentes">Docentes</a>
+        <a href="/api/carreras">Carreras</a>
+        <a href="/api/materias">Materias</a>
+        <a href="/api/planes-estudios">Planes de estudio</a>
+        <a href="/api/periodos">Periodos académicos</a>
+        <a href="/api/aulas">Aulas</a>
+        <a href="/api/paralelos">Paralelos</a>
+        <a href="/api/horarios">Horarios</a>
+        <a href="#inscripciones">Inscripciones</a>
+        <a href="/api/dashboard">API Dashboard</a>
+    </div>
+</nav>
 <header>
     <p class="eyebrow">ObjectDB · laboratorio académico</p>
     <h1>Sistema Universitario</h1>
@@ -15,22 +35,44 @@
 <main>
     <section class="metrics" aria-label="Módulos">
         <article><strong id="total-estudiantes">-</strong><span>Estudiantes</span></article>
-        <article><strong>REST</strong><span>API activa</span></article>
-        <article><strong>JPA</strong><span>Persistencia</span></article>
-        <article><strong>ODB</strong><span>ObjectDB</span></article>
+        <article><strong id="total-docentes">-</strong><span>Docentes</span></article>
+        <article><strong id="total-carreras">-</strong><span>Carreras</span></article>
+        <article><strong id="total-inscripciones">-</strong><span>Inscripciones</span></article>
     </section>
-    <section class="panel">
+    <section id="estudiantes" class="panel">
         <div class="panel-heading">
             <div><p class="eyebrow">Consulta JPQL</p><h2>Estudiantes registrados</h2></div>
-            <button id="reload" type="button">Actualizar</button>
+            <div>
+                <button id="new-student" type="button">Nuevo estudiante</button>
+                <button id="reload" type="button" class="secondary">Actualizar</button>
+            </div>
         </div>
         <p id="status" role="status">Consultando la API...</p>
+        <form id="student-form" class="student-form" hidden>
+            <input type="hidden" id="student-id">
+            <label>CI <input id="student-ci" required></label>
+            <label>Nombre <input id="student-name" required></label>
+            <label>Apellido <input id="student-surname" required></label>
+            <label>Correo <input id="student-email" type="email" required></label>
+            <label>Código <input id="student-code" required></label>
+            <label>Semestre <input id="student-semester" type="number" min="0" value="1"></label>
+            <div class="form-actions">
+                <button type="submit">Guardar estudiante</button>
+                <button id="cancel-student" type="button" class="secondary">Cancelar</button>
+            </div>
+        </form>
         <div class="table-wrap">
             <table>
-                <thead><tr><th>Código</th><th>Nombre</th><th>Correo</th><th>Carrera</th><th>Estado</th></tr></thead>
+                <thead><tr><th>Código</th><th>Nombre</th><th>Correo</th><th>Carrera</th><th>Estado</th><th>Acciones</th></tr></thead>
                 <tbody id="students"></tbody>
             </table>
         </div>
+    </section>
+    <section id="inscripciones" class="panel module-note">
+        <p class="eyebrow">Flujo transaccional</p>
+        <h2>Inscripciones</h2>
+        <p>El endpoint de inscripción atómica está disponible para validar estudiante, periodo, cupos y prerrequisitos.</p>
+        <code>POST /api/inscripciones/transaccion</code>
     </section>
 </main>
 <script src="/js/app.js"></script>

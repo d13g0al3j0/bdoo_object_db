@@ -81,13 +81,74 @@ La herencia usa `@Inheritance(strategy = JOINED)`: los atributos comunes permane
 - Una transacción comienza con `begin()`, confirma con `commit()` y revierte con `rollback()`.
 - Los estados JPA a estudiar son `NEW`, `MANAGED`, `DETACHED` y `REMOVED`, mediante `persist`, `find`, `merge`, `remove`, `detach` y `clear`.
 
-## API disponible
+## URLs disponibles
+
+Con la aplicación ejecutándose mediante Docker, la interfaz web está disponible en:
 
 ```text
-GET  /api/estudiantes
-GET  /api/estudiantes/{id}
-POST /api/inscripciones/transaccion
+http://localhost:8080
 ```
+
+### Estudiantes
+
+```text
+GET    http://localhost:8080/api/estudiantes
+GET    http://localhost:8080/api/estudiantes/{id}
+POST   http://localhost:8080/api/estudiantes
+PUT    http://localhost:8080/api/estudiantes/{id}
+DELETE http://localhost:8080/api/estudiantes/{id}
+```
+
+### Docentes
+
+```text
+GET    http://localhost:8080/api/docentes
+POST   http://localhost:8080/api/docentes
+PUT    http://localhost:8080/api/docentes/{id}
+DELETE http://localhost:8080/api/docentes/{id}
+```
+
+### Carreras
+
+```text
+GET    http://localhost:8080/api/carreras
+POST   http://localhost:8080/api/carreras
+PUT    http://localhost:8080/api/carreras/{id}
+DELETE http://localhost:8080/api/carreras/{id}
+```
+
+### Materias
+
+```text
+GET    http://localhost:8080/api/materias
+POST   http://localhost:8080/api/materias
+PUT    http://localhost:8080/api/materias/{id}
+DELETE http://localhost:8080/api/materias/{id}
+```
+
+### Catálogos académicos
+
+```text
+GET  http://localhost:8080/api/planes-estudios
+POST http://localhost:8080/api/planes-estudios
+GET  http://localhost:8080/api/periodos
+POST http://localhost:8080/api/periodos
+GET  http://localhost:8080/api/aulas
+POST http://localhost:8080/api/aulas
+GET  http://localhost:8080/api/paralelos
+POST http://localhost:8080/api/paralelos
+GET  http://localhost:8080/api/horarios
+POST http://localhost:8080/api/horarios
+```
+
+### Inscripciones y dashboard
+
+```text
+POST http://localhost:8080/api/inscripciones/transaccion
+GET  http://localhost:8080/api/dashboard
+```
+
+La documentación y los endpoints disponibles corresponden a la fase actual del proyecto. Las rutas avanzadas de historial, calificaciones, pagos y auditoría todavía están pendientes.
 
 La inscripción recibe:
 
